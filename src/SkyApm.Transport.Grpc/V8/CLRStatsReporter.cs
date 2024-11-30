@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SkyApm.Config;
@@ -28,20 +29,18 @@ namespace SkyApm.Transport.Grpc.V8
 {
     internal class CLRStatsReporter : ICLRStatsReporter
     {
-        private readonly ConnectionManager _connectionManager;
         private readonly ILogger _logger;
-        private readonly GrpcConfig _config;
-        private readonly IRuntimeEnvironment _runtimeEnvironment;
+        private readonly ConnectionManager _connectionManager;
         private readonly InstrumentConfig _instrumentConfig;
+        private readonly GrpcConfig _config;
 
         public CLRStatsReporter(ConnectionManager connectionManager, ILoggerFactory loggerFactory,
             IConfigAccessor configAccessor, IRuntimeEnvironment runtimeEnvironment)
         {
-            _connectionManager = connectionManager;
             _logger = loggerFactory.CreateLogger(typeof(CLRStatsReporter));
-            _config = configAccessor.Get<GrpcConfig>();
-            _runtimeEnvironment = runtimeEnvironment;
+            _connectionManager = connectionManager;
             _instrumentConfig = configAccessor.Get<InstrumentConfig>();
+            _config = configAccessor.Get<GrpcConfig>();
         }
 
         public async Task ReportAsync(CLRStatsRequest statsRequest,

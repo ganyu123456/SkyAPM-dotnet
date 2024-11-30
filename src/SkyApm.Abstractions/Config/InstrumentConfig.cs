@@ -23,6 +23,8 @@ namespace SkyApm.Config
     [Config("SkyWalking")]
     public class InstrumentConfig
     {
+        public string Enable { get; set; }
+
         public string Namespace { get; set; }
 
         [Obsolete("Use ServiceName.")]
@@ -32,8 +34,19 @@ namespace SkyApm.Config
 
         public string ServiceInstanceName { get; set; }
 
-
         public string[] HeaderVersions { get; set; }
+
+        public bool MeterActive { get; set; } = true;
+
+        public bool MetricActive { get; set; } = true;
+
+        public bool SegmentActive { get; set; } = true;
+
+        public bool ProfilingActive { get; set; } = true;
+
+        public bool ManagementActive { get; set; } = true;
+
+        public bool LogActive { get; set; } = true;
     }
 
     public static class HeaderVersions

@@ -27,12 +27,14 @@ namespace SkyApm.Transport.Grpc
 {
     public class CLRStatsReporter : ICLRStatsReporter
     {
+        private readonly InstrumentConfig _instrumentConfig;
         private readonly TransportConfig _transportConfig;
         private readonly ICLRStatsReporter _clrStatsReporterV8;
 
         public CLRStatsReporter(ConnectionManager connectionManager, ILoggerFactory loggerFactory,
             IConfigAccessor configAccessor, IRuntimeEnvironment runtimeEnvironment)
         {
+            _instrumentConfig = configAccessor.Get<InstrumentConfig>();
             _transportConfig = configAccessor.Get<TransportConfig>();
             _clrStatsReporterV8 = new V8.CLRStatsReporter(connectionManager, loggerFactory, configAccessor, runtimeEnvironment);
         }
@@ -40,6 +42,10 @@ namespace SkyApm.Transport.Grpc
         public async Task ReportAsync(CLRStatsRequest statsRequest,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_instrumentConfig != null && ! _instrumentConfig.MetricActive)
+            {
+                return;
+            }
             if (_transportConfig.ProtocolVersion == ProtocolVersions.V8)
                 await _clrStatsReporterV8.ReportAsync(statsRequest);
         }

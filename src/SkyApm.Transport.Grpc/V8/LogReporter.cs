@@ -28,22 +28,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SkyApm.Transport.Grpc
+namespace SkyApm.Transport.Grpc.V8
 {
     public class LogReporter : ILogReporter
     {
-        private readonly ConnectionManager _connectionManager;
         private readonly ILogger _logger;
-        private readonly GrpcConfig _grpcConfig;
+        private readonly ConnectionManager _connectionManager;
         private readonly InstrumentConfig _instrumentConfig;
+        private readonly GrpcConfig _grpcConfig;
 
-        public LogReporter(ConnectionManager connectionManager, IConfigAccessor configAccessor,
-            ILoggerFactory loggerFactory)
+        public LogReporter(ConnectionManager connectionManager, ILoggerFactory loggerFactory,
+            IConfigAccessor configAccessor)
         {
-            _connectionManager = connectionManager;
-            _grpcConfig = configAccessor.Get<GrpcConfig>();
-            _instrumentConfig = configAccessor.Get<InstrumentConfig>();
             _logger = loggerFactory.CreateLogger(typeof(LogReporter));
+            _connectionManager = connectionManager;
+            _instrumentConfig = configAccessor.Get<InstrumentConfig>();
+            _grpcConfig = configAccessor.Get<GrpcConfig>();
         }
         
         public async Task ReportAsync(IReadOnlyCollection<LogRequest> logRequests,
@@ -69,7 +69,7 @@ namespace SkyApm.Transport.Grpc
                             Timestamp = logRequest.Date,
                             Service = _instrumentConfig.ServiceName,
                             ServiceInstance = _instrumentConfig.ServiceInstanceName,
-                            Endpoint = logRequest.Endpoint,
+                            Endpoint = logRequest.Endpoint ?? string.Empty,
                             Body = new LogDataBody()
                             {
                                 Type = "text",
